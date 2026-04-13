@@ -35,7 +35,9 @@ class GuardianKeyboardView @JvmOverloads constructor(
         private const val ACTION_ENTER = "enter"
         private const val ACTION_SHIFT = "shift"
         private const val ACTION_MODE_TOGGLE = "mode_toggle"
+        private const val ACTION_SYMBOLS_TOGGLE = "symbols_toggle"
 
+        private val NUMBER_ROW = listOf("1","2","3","4","5","6","7","8","9","0")
         private val LETTER_ROW1 = listOf("q","w","e","r","t","y","u","i","o","p")
         private val LETTER_ROW2 = listOf("a","s","d","f","g","h","j","k","l")
         private val LETTER_ROW3 = listOf("z","x","c","v","b","n","m")
@@ -127,6 +129,7 @@ class GuardianKeyboardView @JvmOverloads constructor(
 
         when (mode) {
             Mode.LETTERS -> {
+                addKeyRow(NUMBER_ROW, indentWeight = 0f, isSymbols = true)
                 addKeyRow(LETTER_ROW1, indentWeight = 0f)
                 addKeyRow(LETTER_ROW2, indentWeight = 0.55f)
                 addLetterRow3()
@@ -234,8 +237,10 @@ class GuardianKeyboardView @JvmOverloads constructor(
             }
         }
 
-        // In symbols mode, "shift" key toggles symbols pages.
-        shiftKeyView = makeSpecialKey(if (page1) "1/2" else "2/2", ACTION_SHIFT).also { row.addView(it, keyLayoutParams(1.35f)) }
+        // In number/symbol mode, left key toggles between number(123) and symbol(#+=) pages.
+        shiftKeyView = makeSpecialKey(if (page1) "#+=" else "123", ACTION_SYMBOLS_TOGGLE).also {
+            row.addView(it, keyLayoutParams(1.35f))
+        }
         (if (page1) SYMBOL_ROW3 else listOf("/", "\"", "'", ";", ":", "!", "?")).forEach { label ->
             row.addView(makeTextKey(label, isSpecial = false, isSymbols = true), keyLayoutParams(1f))
         }
@@ -355,7 +360,7 @@ class GuardianKeyboardView @JvmOverloads constructor(
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
-                val inside = isPointInsideView(event.rawX, event.rawY, keyView, slop = touchSlop)
+                val inside = isPointInsideView(event.x, event.y, keyView, slop = touchSlop)
                 keyView.isPressed = inside
                 if (!inside) {
                     dismissKeyPreview()
@@ -388,6 +393,7 @@ class GuardianKeyboardView @JvmOverloads constructor(
             ACTION_ENTER -> onSpecialKey?.invoke(ACTION_ENTER)
             ACTION_SHIFT -> handleShiftPressed()
             ACTION_MODE_TOGGLE -> toggleMode()
+            ACTION_SYMBOLS_TOGGLE -> toggleSymbolsPage()
             " " -> onCommitText?.invoke(" ")
             else -> {
                 val out = if (mode == Mode.LETTERS && s.length == 1 && s[0].isLetter()) applyShiftToLetter(s) else s
@@ -435,6 +441,12 @@ class GuardianKeyboardView @JvmOverloads constructor(
         mode = if (mode == Mode.LETTERS) Mode.SYMBOLS else Mode.LETTERS
         shiftState = ShiftState.OFF
         if (mode == Mode.SYMBOLS) symbolsPage = SymbolsPage.PAGE_1
+        rebuild()
+    }
+
+    private fun toggleSymbolsPage() {
+        if (mode != Mode.SYMBOLS) return
+        symbolsPage = if (symbolsPage == SymbolsPage.PAGE_1) SymbolsPage.PAGE_2 else SymbolsPage.PAGE_1
         rebuild()
     }
 
@@ -538,9 +550,11 @@ class GuardianKeyboardView @JvmOverloads constructor(
         backspaceRepeatRunnable = null
     }
 
-    private fun isPointInsideView(rawX: Float, rawY: Float, view: TextView, slop: Int): Boolean {
-        view.getGlobalVisibleRect(tmpRect)
-        tmpRect.inset(-slop, -slop)
-        return tmpRect.contains(rawX.toInt(), rawY.toInt())
+    private fun isPointInsideView(localX: Float, localY: Float, view: TextView, slop: Int): Boolean {
+        val minX = -slop.toFloat()
+        val minY = -slop.toFloat()
+        val maxX = view.width + slop.toFloat()
+        val maxY = view.height + slop.toFloat()
+        return localX in minX..maxX && localY in minY..maxY
     }
 }

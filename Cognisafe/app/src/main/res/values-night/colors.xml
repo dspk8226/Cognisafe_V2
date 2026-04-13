@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Keyboard dark palette -->
+    <color name="keyboard_bg">#FF1E1F22</color>
+    <color name="keyboard_key_bg">#FF2A2C30</color>
+    <color name="keyboard_key_bg_special">#FF373A40</color>
+    <color name="keyboard_key_stroke">#33FFFFFF</color>
+    <color name="keyboard_key_text">#FFF5F5F5</color>
+    <color name="keyboard_key_text_secondary">#FFC6C6C6</color>
+    <color name="keyboard_ripple">#4D8AB4F8</color>
+    <color name="keyboard_key_preview_bg">#FF2A2C30</color>
+    <color name="keyboard_key_preview_stroke">#66FFFFFF</color>
+    <color name="keyboard_alert_bg">#FFB23C17</color>
+</resources>
+

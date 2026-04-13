@@ -45,9 +45,10 @@ class GuardianImeService : InputMethodService() {
     private var guardianNumber: String = ""
     private var backendBaseUrl: String = "http://10.0.2.2:8000/"
     
-    // View for the keyboard input
+    // IME modular components
+    private lateinit var keyboardViewManager: KeyboardViewManager
+    private val inputHandler = InputHandler()
     private var inputView: View? = null
-    private var keyboardView: GuardianKeyboardView? = null
     private val isDebugBuild: Boolean by lazy {
         (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
     }
@@ -55,6 +56,7 @@ class GuardianImeService : InputMethodService() {
     override fun onCreate() {
         super.onCreate()
         Log.d(TAG, "========== GuardianImeService.onCreate() ==========")
+        keyboardViewManager = KeyboardViewManager(layoutInflater)
         loadConfiguration()
     }
 
@@ -65,12 +67,11 @@ class GuardianImeService : InputMethodService() {
         Log.d(TAG, "Loaded config - keywordThreshold: $keywordThreshold, guardian: $guardianNumber, backend: $backendBaseUrl")
         
         // Create soft-touch keyboard view and wire to guardian logic
-        inputView = layoutInflater.inflate(R.layout.input_view, null)
-        keyboardView = inputView!!.findViewById(R.id.guardian_keyboard)
-        keyboardView?.onCommitText = { text ->
+        inputView = keyboardViewManager.createInputView(
+            onCommitText = { text ->
             commitTextFromKeyboard(text)
-        }
-        keyboardView?.onSpecialKey = { key ->
+        },
+            onSpecialKey = { key ->
             when (key) {
                 "backspace" -> deleteBackward()
                 "enter" -> {
@@ -80,7 +81,7 @@ class GuardianImeService : InputMethodService() {
                 }
             }
             updateImeDrivenKeyStates()
-        }
+        })
         Log.d(TAG, "Input view (soft keyboard) created successfully")
         updateImeDrivenKeyStates()
         return inputView!!
@@ -176,7 +177,7 @@ class GuardianImeService : InputMethodService() {
         
         when (keyCode) {
             KeyEvent.KEYCODE_SPACE -> {
-                inputConnection.commitText(" ", 1)
+                inputHandler.commitText(inputConnection, " ")
                 textBuffer.onTextCommitted(" ")
                 return true
             }
@@ -210,7 +211,7 @@ class GuardianImeService : InputMethodService() {
     private fun commitTextFromKeyboard(text: String) {
         if (text.isEmpty()) return
         val ic = currentInputConnection ?: return
-        ic.commitText(text, 1)
+        inputHandler.commitText(ic, text)
         onTextCommitted(text)
         updateImeDrivenKeyStates()
     }
@@ -221,52 +222,19 @@ class GuardianImeService : InputMethodService() {
     private fun deleteBackward() {
         val ic = currentInputConnection ?: return
         textBuffer.onBackspace()
-        ic.deleteSurroundingText(1, 0)
+        inputHandler.deleteBackward(ic)
     }
 
     /**
      * Sends enter/IME action (e.g. done, next, search), falling back to KEYCODE_ENTER.
      */
     private fun sendEnterAction() {
-        val ic = currentInputConnection ?: return
-        val info = currentInputEditorInfo
-        val action = info?.imeOptions?.and(EditorInfo.IME_MASK_ACTION) ?: EditorInfo.IME_ACTION_UNSPECIFIED
-
-        val performed = when (action) {
-            EditorInfo.IME_ACTION_DONE,
-            EditorInfo.IME_ACTION_GO,
-            EditorInfo.IME_ACTION_NEXT,
-            EditorInfo.IME_ACTION_PREVIOUS,
-            EditorInfo.IME_ACTION_SEARCH,
-            EditorInfo.IME_ACTION_SEND -> ic.performEditorAction(action)
-            else -> false
-        }
-
-        if (!performed) {
-            ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER))
-            ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER))
-        }
+        inputHandler.sendEnter(currentInputConnection, currentInputEditorInfo)
         updateImeDrivenKeyStates()
     }
 
     private fun updateImeDrivenKeyStates(info: EditorInfo? = currentInputEditorInfo) {
-        // Auto-capitalization: align shift state with cursor caps mode.
-        val ic = currentInputConnection
-        val capsMode = ic?.getCursorCapsMode(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES) ?: 0
-        keyboardView?.setAutoCaps(capsMode != 0)
-
-        // Enter key label based on imeOptions action.
-        val action = info?.imeOptions?.and(EditorInfo.IME_MASK_ACTION) ?: EditorInfo.IME_ACTION_UNSPECIFIED
-        val label = when (action) {
-            EditorInfo.IME_ACTION_DONE -> "Done"
-            EditorInfo.IME_ACTION_GO -> "Go"
-            EditorInfo.IME_ACTION_NEXT -> "Next"
-            EditorInfo.IME_ACTION_PREVIOUS -> "Prev"
-            EditorInfo.IME_ACTION_SEARCH -> "Search"
-            EditorInfo.IME_ACTION_SEND -> "Send"
-            else -> "↵"
-        }
-        keyboardView?.setEnterLabel(label)
+        keyboardViewManager.updateImeDrivenKeyStates(info, currentInputConnection)
     }
 
     /**
@@ -358,7 +326,7 @@ class GuardianImeService : InputMethodService() {
     }
 
     private fun showSuggestionPopup() {
-        keyboardView?.showSuggestionMessage("You seem stressed. Try taking 3 slow breaths.")
+        keyboardViewManager.showSuggestionMessage("You seem stressed. Try taking 3 slow breaths.")
         try {
             val intent = Intent(this, SuggestionActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
