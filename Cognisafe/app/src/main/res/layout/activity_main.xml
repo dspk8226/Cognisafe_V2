@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Guardian Keyboard Settings"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="24dp" />
+
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Configure your guardian settings below"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Quick test input: helps verify keyboard is showing -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Test typing (tap here):"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/testTypingInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Tap to open the current keyboard"
+            android:inputType="text"
+            android:layout_marginBottom="8dp"
+            android:padding="12dp" />
+
+        <Button
+            android:id="@+id/showKeyboardButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Show Keyboard"
+            android:textSize="16sp"
+            android:layout_marginBottom="24dp"
+            android:padding="16dp" />
+
+        <!-- Guardian Phone Number -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Guardian Phone Number:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/guardianNumberInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter phone number (e.g., +1234567890)"
+            android:inputType="phone"
+            android:layout_marginBottom="16dp"
+            android:padding="12dp" />
+
+        <!-- Threshold -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Keyword Threshold:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/keywordThresholdInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Default: 10"
+            android:inputType="number"
+            android:layout_marginBottom="16dp"
+            android:padding="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Backend inference triggers when keyword score reaches threshold"
+            android:textSize="12sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Backend URL -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Backend Base URL:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/backendUrlInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="http://10.0.2.2:8000/"
+            android:inputType="textUri"
+            android:layout_marginBottom="24dp"
+            android:padding="12dp" />
+
+        <!-- PIN -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PIN (Optional):"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/pinInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter PIN to dismiss blocking overlay"
+            android:inputType="numberPassword"
+            android:layout_marginBottom="16dp"
+            android:padding="12dp" />
+
+        <!-- Buttons -->
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save Configuration"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"
+            android:padding="16dp" />
+
+        <Button
+            android:id="@+id/enableKeyboardButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Open Keyboard Settings"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"
+            android:padding="16dp" />
+
+        <Button
+            android:id="@+id/switchKeyboardButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Switch to Guardian Keyboard Now"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"
+            android:padding="16dp"
+            android:backgroundTint="#4CAF50" />
+
+        <Button
+            android:id="@+id/testButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Test Blocking Activity"
+            android:textSize="16sp"
+            android:padding="16dp"
+            android:backgroundTint="#FF0000" />
+
+    </LinearLayout>
+
+</ScrollView>
+

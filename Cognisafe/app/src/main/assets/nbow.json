@@ -1,0 +1,15 @@
+{
+  "pornography": {
+    "words": ["sex", "porn", "nude", "xxx", "naked", "explicit"],
+    "weight": 2
+  },
+  "violence": {
+    "words": ["kill", "bomb", "stab", "attack", "harm", "hurt"],
+    "weight": 1
+  },
+  "selfharm": {
+    "words": ["suicide", "die", "end it all", "kill myself", "cut myself"],
+    "weight": 3
+  }
+}
+

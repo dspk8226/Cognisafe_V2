@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="keyboard_key_height">48dp</dimen>
+    <dimen name="keyboard_key_min_width">28dp</dimen>
+    <dimen name="keyboard_horizontal_gap">3dp</dimen>
+    <dimen name="keyboard_vertical_gap">4dp</dimen>
+    <dimen name="keyboard_key_text_size">18sp</dimen>
+    <dimen name="keyboard_bottom_padding">8dp</dimen>
+
+    <dimen name="keyboard_key_radius">10dp</dimen>
+    <dimen name="keyboard_key_stroke_width">1dp</dimen>
+    <dimen name="keyboard_key_padding_v">10dp</dimen>
+    <dimen name="keyboard_key_preview_text_size">28sp</dimen>
+    <dimen name="keyboard_key_preview_padding">12dp</dimen>
+</resources>
